@@ -4,8 +4,8 @@ services:
     restart: always
     image: rabbitmq:3.8.9-management
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     hostname: rabbit
     volumes:
       - ./data/rabbit:/var/lib/rabbitmq/mnesia/
@@ -16,7 +16,7 @@ services:
       - default
     #открывать порт не безопасно, храним чувствительные данные
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - ./data/redis:/data
   mongodb:
@@ -29,4 +29,24 @@ services:
     volumes:
       - ./data/mongodb/database:/data/db
     ports:
-      - 27017:27017
+      - "27017:27017"
+  postgres:
+      restart: always
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "200k"
+          max-file: "10"
+      shm_size: 1g
+      image: postgres:alpine
+      ports:
+        - "5423:5432"
+      environment:
+        - DEBUG=false
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_DB=${POSTGRES_DATABASE}
+      networks:
+        - default
+      volumes:
+        - ./data/postgresql:/var/lib/postgresql
