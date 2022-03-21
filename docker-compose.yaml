@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  rabbitmq:
+    restart: always
+    image: rabbitmq:3.8.9-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    hostname: rabbit
+    volumes:
+      - ./data/rabbit:/var/lib/rabbitmq/mnesia/
+  redis:
+    restart: always
+    image: "redis:alpine"
+    networks:
+      - default
+    #открывать порт не безопасно, храним чувствительные данные
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./data/redis:/data
+  mongodb:
+    restart: unless-stopped
+    image: mongo
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data/mongodb/database:/data/db
+    ports:
+      - 27017:27017
